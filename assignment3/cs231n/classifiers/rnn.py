@@ -139,16 +139,25 @@ class CaptioningRNN(object):
         ############################################################################
         image_out, image_cahce = affine_forward(features,W_proj,b_proj)
         embedding_out,embedding_cache = word_embedding_forward(captions_in,W_embed)
+        out,cache=None,None
         if self.cell_type == 'rnn':
-            rnn_out,rnn_cache= rnn_forward(embedding_out,image_out,Wx,Wh,b)
-            affine_out,affine_cache=temporal_affine_forward(rnn_out,W_vocab,b_vocab)
-            loss,dsoftmax=temporal_softmax_loss(affine_out,captions_out,mask)
+            out,cache= rnn_forward(embedding_out,image_out,Wx,Wh,b)
+        elif self.cell_type=='lstm':
+            out,cache=lstm_forward(embedding_out,image_out,Wx,Wh,b)
+
+        affine_out,affine_cache=temporal_affine_forward(out,W_vocab,b_vocab)
+        loss,dsoftmax=temporal_softmax_loss(affine_out,captions_out,mask)
 
 
-            daffine, grads['W_vocab'], grads['b_vocab'] = temporal_affine_backward(dsoftmax,affine_cache)
-            dembedd, dimage, grads['Wx'], grads['Wh'],grads['b']=rnn_backward(daffine,rnn_cache)
-            grads['W_embed']=word_embedding_backward(dembedd,embedding_cache)
-            din, grads['W_proj'], grads['b_proj']=affine_backward(dimage,image_cahce)
+        daffine, grads['W_vocab'], grads['b_vocab'] = temporal_affine_backward(dsoftmax,affine_cache)
+        dembedd, dimage, grads['Wx'], grads['Wh'],grads['b']=None,None,None,None,None
+        if self.cell_type=='rnn':
+            dembedd, dimage, grads['Wx'], grads['Wh'],grads['b']=rnn_backward(daffine,cache)
+        elif self.cell_type=='lstm':
+            dembedd, dimage, grads['Wx'], grads['Wh'],grads['b']=lstm_backward(daffine,cache)
+
+        grads['W_embed']=word_embedding_backward(dembedd,embedding_cache)
+        din, grads['W_proj'], grads['b_proj']=affine_backward(dimage,image_cahce)
 
         ############################################################################
         #                             END OF YOUR CODE                             #
@@ -212,27 +221,34 @@ class CaptioningRNN(object):
         # a loop.                                                                 #
         ###########################################################################
         prev_h,_=affine_forward(features,W_proj,b_proj)
+        H=prev_h.shape[1]
+        prev_c=np.zeros((N,H))
         current_word = np.zeros((features.shape[0],1))
         current_word+=self._start
         current_word= current_word.astype(int)
         #print ("current word shape " , current_word.shape)
 
         for i in range(max_length):
+            out=None
             embedded, _ = word_embedding_forward(current_word,W_embed)
             embedded=embedded.reshape(N,-1)
             #print("embedded shape " , embedded.shape)
             if self.cell_type=='rnn':
-                rnn_out, _ = rnn_step_forward(embedded,prev_h,Wx,Wh,b)
+                out, _ = rnn_step_forward(embedded,prev_h,Wx,Wh,b)
+            elif self.cell_type=='lstm':
+                out,c,_=lstm_step_forward(embedded,prev_h,prev_c,Wx,Wh,b)
+                prev_c=c
+
                 #print("next h shape ", rnn_out.shape)
-                affine,_ =affine_forward(rnn_out,W_vocab,b_vocab)
-                #print("scores shape " , affine.shape)
-                c=np.argmax(affine,axis=1).reshape(-1)
-                captions[:,i]=c
-                #print("c shape  ",c.shape)
-                #print("captions[:,i] shape" , captions[:,i].shape)
-                prev_h=rnn_out
-                current_word=captions[:,i]
-                current_word=current_word.reshape(-1,1)
+            affine,_ =affine_forward(out,W_vocab,b_vocab)
+            #print("scores shape " , affine.shape)
+            c=np.argmax(affine,axis=1).reshape(-1)
+            captions[:,i]=c
+            #print("c shape  ",c.shape)
+            #print("captions[:,i] shape" , captions[:,i].shape)
+            prev_h=out
+            current_word=captions[:,i]
+            current_word=current_word.reshape(-1,1)
 
 
 
