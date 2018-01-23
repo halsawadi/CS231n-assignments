@@ -22,7 +22,7 @@
         <entry file="file://$PROJECT_DIR$/cs231n/classifiers/squeezenet.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="551">
-              <caret line="99" column="33" lean-forward="true" selection-start-line="99" selection-start-column="33" selection-end-line="99" selection-end-column="33" />
+              <caret line="99" column="33" lean-forward="false" selection-start-line="99" selection-start-column="33" selection-end-line="99" selection-end-column="33" />
               <folding />
             </state>
           </provider>
@@ -77,7 +77,7 @@
     <sorting>DEFINITION_ORDER</sorting>
   </component>
   <component name="PhpWorkspaceProjectConfiguration" backward_compatibility_performed="true" />
-  <component name="ProjectFrameBounds" extendedState="7">
+  <component name="ProjectFrameBounds" extendedState="6">
     <option name="width" value="1920" />
     <option name="height" value="1044" />
   </component>
@@ -278,7 +278,7 @@
     <option name="totallyTimeSpent" value="45449000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1922" height="1092" extended-state="7" />
+    <frame x="0" y="0" width="1922" height="1092" extended-state="6" />
     <editor active="true" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
@@ -361,7 +361,7 @@
     <entry file="file://$PROJECT_DIR$/cs231n/classifiers/squeezenet.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="551">
-          <caret line="99" column="33" lean-forward="true" selection-start-line="99" selection-start-column="33" selection-end-line="99" selection-end-column="33" />
+          <caret line="99" column="33" lean-forward="false" selection-start-line="99" selection-start-column="33" selection-end-line="99" selection-end-column="33" />
           <folding />
         </state>
       </provider>
